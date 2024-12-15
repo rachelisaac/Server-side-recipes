@@ -18,9 +18,9 @@ connectToDB();
 
 const app = express();
 
-// app.get("/", (req, res, next) => {
-//     res.send("Welcome to my website");
-// });
+app.get("/", (req, res, next) => {
+    res.send("Welcome to my website");
+});
 
 // app.use(express.json());
 app.use(bodyParser.json())

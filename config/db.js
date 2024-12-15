@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const DB_URL = process.env.MONGODB_URI ||"mongodb+srv://r0556722102:qCU4XmG5Qr0OJw5R@projectracheli.ti885.mongodb.net/";
+const DB_URL = process.env.MONGODB_URI ;
 
 async function connectToDB() {
     try {

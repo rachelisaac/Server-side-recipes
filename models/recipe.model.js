@@ -18,7 +18,7 @@ const recipSchema = new Schema({
 const recipeValidationSchema = Joi.object({
     name: Joi.string().min(3).required(),
     description: Joi.string().optional(),
-    category: Joi.array().items(Joi.objectId()),
+    category: Joi.array().items(Joi.string().hex().length(24).required()),
     timeInMinutes: Joi.number().integer().min(1).required(),
     level: Joi.number().valid(1, 2, 3, 4, 5).required(),
     createdAt: Joi.date().optional(),
@@ -29,8 +29,9 @@ const recipeValidationSchema = Joi.object({
         })
     ).optional(),
     isPrivate: Joi.boolean().optional(),
-    user: Joi.objectId().required(),
+    user: Joi.string().hex().length(24).required()
 });
+
 
 // פונקציה לבדיקת תקינות הנתונים
 const validateRecipe = (recipe) => {
