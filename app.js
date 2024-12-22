@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
+console.log('MongoDB URI:', process.env.MONGODB_URI);
 
 import express from 'express';
 import cors from 'cors';
@@ -27,12 +28,11 @@ app.use(bodyParser.json())
 app.use(cors());
 app.use(morgan('dev'));
 
-// בדיקה אם הרשמה או התחברות
-
 
 // חיבור לנתיבים
 app.use("/recipe", recipeRouter);
 app.use("/users", usersRouter);
+console.log('Router /users has been set up');
 app.use("/category", categoryRouter);
 
 // טיפול בשגיאות

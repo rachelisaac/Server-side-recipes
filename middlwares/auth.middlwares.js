@@ -1,9 +1,9 @@
-import jwt from'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 // יצירת מידלוואר שיבדוק את הטוקן בכל בקשה שדורשת הרשאות
 export const auth = (req, res, next) => {
-    const { authorization } = req.headers;
-    
+
+    const { authorization } = req.headers;// מהreq שןלף את ההדר שנקרא אוטוריזישן 
     if (!authorization) {
         return res.status(401).json({ message: 'No token provided' });
     }
@@ -13,17 +13,21 @@ export const auth = (req, res, next) => {
 
     try {
         const user = jwt.verify(token, secretKey);
+        if (user) {
+            req.user_id = user.id;
+            req.user_role = user.role;
+        }
+        else {
+            req.user_role = "guest"
+            req.id = "undefined"
+        }
+        console.log(user_role);
         
-        req.user_id = user.id;
-        req.user_role = user.role;
-
         next();
     } catch (error) {
         return res.status(401).json({ error: 'Invalid token' });
     }
 };
-
-
 export const adminAuth = (req, res, next) => {
     if (req.user_role === 'admin') {
         return next();

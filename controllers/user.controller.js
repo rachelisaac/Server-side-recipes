@@ -1,5 +1,6 @@
 import User from '../models/user.model.js';
 import { generateToken } from '../middlwares/generateToken.middleware.js';
+import bcrypt from 'bcryptjs'
 
 //קבלת כל המשתמשים -רק למנהל יש הרשאה
 export const getAllUsers = async function (req, res, next) {
@@ -13,18 +14,20 @@ export const getAllUsers = async function (req, res, next) {
 
 // התחברות
 export const login = async function (req, res, next) {
+    console.log("1");
     const { email, password } = req.body;  // הנתונים מהלקוח
+    console.log("1");
     try {
         const user = await User.findOne({ email: email });
+        console.log("2");
         if (!user) {
             return next({ error: 'login failed', status: 401 });
         }
 
-        // בדיקת הסיסמא המוצפנת
-        const result = await bcrypt.compare(password, user.password);  // מקורית, מוצפנת
+        const result = await bcrypt.compare(password, user.password); 
         if (result) {
-            const token = generateToken(user);  // ודא ש-`generateToken` מיובא
-            user.password = '****';  // להסתיר את הסיסמא לפני החזרה
+            const token = generateToken(user); 
+            user.password = '****';  // הסתרת הסיסמא לפני החזרה
             return res.json({ user_name: user.name, token });
         } else {
             return next({ error: 'login failed', status: 401 });
@@ -55,9 +58,7 @@ export const register = async function (req, res, next) {
         await newUser.save();
         console.log(newUser);
 
-
-        // אתה כנראה צריך להפעיל פונקציה כזו או דומה לצורך יצירת token
-        const token =await generateToken(newUser);  // ודא ש-`generateToken` מוגדרת במודל
+        const token =await generateToken(newUser);
         console.log(token);
 
         res.status(201).send({
@@ -72,3 +73,6 @@ export const register = async function (req, res, next) {
         next({ error: error.message, status: 400 });
     }
 }
+
+
+

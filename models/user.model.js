@@ -2,7 +2,7 @@
 import mongoose from 'mongoose';
 import { Schema, model } from 'mongoose';
 import bcrypt from 'bcryptjs';
-import Joi from 'joi'; // Import Joi for validation
+import Joi from 'joi';
 
 // Define the Joi validation schema
 const userValidationSchema = Joi.object({

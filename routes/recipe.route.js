@@ -4,11 +4,11 @@ import { auth } from '../middlwares/auth.middlwares.js'
 
 const router = express.Router();
 
-router.post("/", auth, getAllRecipes);
+router.get("/", auth, getAllRecipes);
 
 router.get("/byminutes/:minutes", auth, getRecipesByMinutes);
 
-router.post("/", auth, addRecipe);
+router.post("/addRecipe", auth, addRecipe);
 
 router.delete("/:rid", auth, deleteRecipe);
 

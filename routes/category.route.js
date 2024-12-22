@@ -14,7 +14,6 @@ router.get('/recipes',auth, GetAllCategoriesAndRecipes);
 router.get('/recipes/name',auth, GetAllCategoriesAndRecipesByName);
 
 
-
 export default router;
 
 

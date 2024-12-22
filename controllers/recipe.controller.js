@@ -1,23 +1,32 @@
 import Recipe from '../models/recipe.model.js';
 
-// פונקציה לשליפת כל המתכונים שאינם פרטיים ו/או המתכונים של המשתמש המחובר
+// פונקציה לשליפת כל המתכונים שאינם פרטיים ו/או המתכונים של המשתמש המחובר************************
 export const getAllRecipes = async (req) => {
     try {
+        let query;
         const userId = req.user_id;
-        const query = {
-            $or: [
-                { isPrivate: false },
-                { user: userId }
-            ]
-        };
+        if (req.user_role == 'admin')
+            query = {}
+        else
+
+            query = {
+                $or: [
+                    { isPrivate: false },
+                    { user: userId }
+                ]
+            };
         if (req.query.str) {
             const searchTerm = req.query.str;
             query.$text = { $search: searchTerm };
         }
+
+
         return await Recipe.find(query)
             .populate('category', 'name')
             .populate('user', 'name')
             .exec();
+
+
     } catch (error) {
         throw { status: 500, error: error.message };
     }
@@ -39,6 +48,8 @@ export const getRecipesByMinutes = async (req, res, next) => {
 
 // הוספת מתכון
 export const addRecipe = async (req, res, next) => {
+    console.log(req.user_role);
+    
     if (req.user_role !== 'user' && req.user_role !== 'admin')
         return next({ status: 403, error: 'only user can add Recipe' });
     try {
@@ -61,8 +72,8 @@ export const addRecipe = async (req, res, next) => {
                 await newCategory.save();  // שמירה של הקטגוריה החדשה
             }
         }
-        await newRecipe.save(); // שמירה בדטהבייס בודקת תקינות
-        res.status(201).send(newRecipe); // האוביקט שנוסף עם הקוד האוטומטי
+        await newRecipe.save();
+        res.status(201).send(newRecipe);
     } catch (error) {
         next({ error: error.message, status: 400 })
     }
@@ -157,14 +168,14 @@ export const getRecipesByUserId = async function (req, res, next) {
     }
 }
 
-// קבלת פרטי מתכון לפי קוד מתכון
+// קבלת פרטי מתכון לפי קוד מתכוןנה
 export const getRecipeById = async (req, res, next) => {
     const id = req.params.id;
     try {
         const recipe = await Recipe.findById(id).populate('user_id');
         if (!recipe) {
-            next({ status: 404, error: "recipe not found" }); 
-        } 
+            next({ status: 404, error: "recipe not found" });
+        }
         if (recipe.user._id.toString() !== req.user_id && req.user_role !== 'admin') {
             return res.status(403).send({ error: 'Unauthorized' });
         }
