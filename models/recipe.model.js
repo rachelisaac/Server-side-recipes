@@ -5,11 +5,16 @@ import Joi from 'joi';
 const recipSchema = new Schema({
     name: String,
     description: String,
-    category: [{ type: Schema.Types.ObjectId, ref: 'category', required: true }],
+    category: Joi.array().items(Joi.string().hex().length(24).required()),
     timeInMinutes: Number,
     level: { type: Number, enum: [1, 2, 3, 4, 5], },
     createdAt: { type: Date, default: Date.now },
-    layers: [{ description: String, ingredients: String }],
+    layers: Joi.array().items(
+        Joi.object({
+            description: Joi.string().required(),
+            ingredients: Joi.string().required()
+        })
+    ).optional(),
     isPrivate: Boolean,
     user: { type: Schema.Types.ObjectId, ref: 'user' },
 });

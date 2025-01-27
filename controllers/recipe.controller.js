@@ -1,32 +1,37 @@
 import Recipe from '../models/recipe.model.js';
+import mongoose from 'mongoose';
+const { ObjectId } = mongoose.Types;
+
 
 // פונקציה לשליפת כל המתכונים שאינם פרטיים ו/או המתכונים של המשתמש המחובר************************
 export const getAllRecipes = async (req) => {
     try {
+        console.log("enter to getAllRecipes function")
         let query;
         const userId = req.user_id;
         if (req.user_role == 'admin')
             query = {}
         else
-
             query = {
                 $or: [
                     { isPrivate: false },
                     { user: userId }
                 ]
             };
+        console.log("finish with query")
         if (req.query.str) {
+            console.log("enter to: if (req.query.str)")
             const searchTerm = req.query.str;
+            console.log(searchTerm)
             query.$text = { $search: searchTerm };
+            console.log(query.$text)
         }
-
-
-        return await Recipe.find(query)
+        const recipes = await Recipe.find(query)
             .populate('category', 'name')
             .populate('user', 'name')
             .exec();
-
-
+            console.log(recipes)
+        return (recipes)
     } catch (error) {
         throw { status: 500, error: error.message };
     }
@@ -49,15 +54,18 @@ export const getRecipesByMinutes = async (req, res, next) => {
 // הוספת מתכון
 export const addRecipe = async (req, res, next) => {
     console.log(req.user_role);
-    
     if (req.user_role !== 'user' && req.user_role !== 'admin')
         return next({ status: 403, error: 'only user can add Recipe' });
     try {
+        console.log(user._id)
         const newRecipe = new Recipe(req.body);
-        newRecipe.user = req.user;
-        for (let categoryName of newRecipe.categories) {
+        
+        newRecipe.user = req.user.id;
+        console.log(newRecipe.category)
+
+        for (let categoryName of newRecipe.category) {
             // חיפוש קטגוריה לפי שם (description)
-            const categoryExists = await Category.findOne({ description: categoryName });
+            const categoryExists = await Category.findById(categoryId);
 
             if (categoryExists) {
                 // אם הקטגוריה קיימת, עדכון המונה שלה
@@ -138,9 +146,13 @@ export const updateRecipe = async (req, res, next) => {
 //מחיקת מתכון רק מנהל או המשתמש שכתב יכולים למחוק
 export const deleteRecipe = async (req, res, next) => {
     try {
+        console.log("enter to deleteRecipe function")
         const id = req.params.id;
-        const recipe = await Recipe.findById(id);
-
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid ID format' });
+        }
+        const recipe = await Recipe.findOne({ _id: id });
+        console.log(recipe)
         if (!recipe) {
             return res.status(404).json({ error: 'Recipe not found' });
         }

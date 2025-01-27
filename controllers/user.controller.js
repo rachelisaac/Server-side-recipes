@@ -14,21 +14,17 @@ export const getAllUsers = async function (req, res, next) {
 
 // התחברות
 export const login = async function (req, res, next) {
-    console.log("1");
     const { email, password } = req.body;  // הנתונים מהלקוח
-    console.log("1");
     try {
-        const user = await User.findOne({ email: email });
-        console.log("2");
+        const user = await User.findOne({ email: email });;
         if (!user) {
             return next({ error: 'login failed', status: 401 });
         }
-
         const result = await bcrypt.compare(password, user.password); 
         if (result) {
             const token = generateToken(user); 
             user.password = '****';  // הסתרת הסיסמא לפני החזרה
-            return res.json({ user_name: user.name, token });
+            return res.json({ user_name: user.name,user_role: user.role, token });
         } else {
             return next({ error: 'login failed', status: 401 });
         }
@@ -39,6 +35,7 @@ export const login = async function (req, res, next) {
 
 // הרשמה
 export const register = async function (req, res, next) {
+    console.log("enter to register function");
     const { name, email, password, address: { city, street, num } } = req.body;
     console.log("register");
 

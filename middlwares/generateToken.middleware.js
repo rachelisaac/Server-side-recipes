@@ -1,11 +1,11 @@
 
 import jwt from 'jsonwebtoken';
 
-//טוקן זו מחרוזת מוצפנת המכילה פרטים להצפנה בתוספת מחרוזת עזר = מחרוזת אחת ארוכה 
+
 // פונקציה ליצירת טוקן עם הרשאות
-export const generateToken = (req) => {
+export const generateToken = (myUser) => {
     // אם יש ב-req את המשתמש (למשל אחרי התחברות), נשלוף את הנתונים
-    const user = req.user;
+    const user = myUser;
 
     const secretKey = process.env.JWT_SECRET || 'secret';  // מחרוזת סודית פרטית לשרת
 
